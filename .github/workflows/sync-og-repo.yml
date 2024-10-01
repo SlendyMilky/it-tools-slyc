@@ -32,6 +32,3 @@ jobs:
         run: |
           git checkout main
           git merge upstream/main --allow-unrelated-histories -m "Synchronisation hebdomadaire avec le dépôt original"
-
-      - name: Pousser les changements vers le fork
-        run: git push origin main
