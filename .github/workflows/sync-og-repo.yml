@@ -1,0 +1,37 @@
+name: Synchroniser le Fork avec le Dépôt Original
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Exécute chaque dimanche à minuit
+  workflow_dispatch: # Permet une exécution manuelle du workflow
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Vérifier le code
+        uses: actions/checkout@v3
+        with:
+          repository: CorentinTh/it-tools
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configurer Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Ajouter le dépôt original en tant que remote 'upstream'
+        run: git remote add upstream https://github.com/CorentinTh/it-tools.git
+
+      - name: Récupérer les changements du dépôt original
+        run: git fetch upstream
+
+      - name: Fusionner les changements dans la branche principale
+        run: |
+          git checkout main
+          git merge upstream/main --allow-unrelated-histories -m "Synchronisation hebdomadaire avec le dépôt original"
+
+      - name: Pousser les changements vers le fork
+        run: git push origin main
